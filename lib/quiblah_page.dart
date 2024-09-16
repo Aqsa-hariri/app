@@ -1,21 +1,34 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_qiblah/flutter_qiblah.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class QuiblahScreen extends StatelessWidget {
-  const QuiblahScreen({super.key});
+class QiblahScreen extends StatelessWidget {
+  const QiblahScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('القبله'),
+        title: Text('القبلة',
+            style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: const Column(
-        children: [Expanded(child: QiblahCompass())],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.deepPurple.shade100, Colors.white],
+          ),
+        ),
+        child: const Column(
+          children: [Expanded(child: QiblahCompass())],
+        ),
       ),
     );
   }
@@ -30,7 +43,7 @@ class QiblahCompass extends StatefulWidget {
 
 class _QiblahCompassState extends State<QiblahCompass> {
   final _locationStreamController =
-  StreamController<LocationStatus>.broadcast();
+      StreamController<LocationStatus>.broadcast();
 
   Stream<LocationStatus> get stream => _locationStreamController.stream;
 
@@ -55,8 +68,9 @@ class _QiblahCompassState extends State<QiblahCompass> {
       child: StreamBuilder(
         stream: stream,
         builder: (context, AsyncSnapshot<LocationStatus> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingIndicator();
+          }
           if (snapshot.data!.enabled == true) {
             switch (snapshot.data!.status) {
               case LocationPermission.always:
@@ -73,11 +87,11 @@ class _QiblahCompassState extends State<QiblahCompass> {
                   error: "Location service Denied Forever !",
                   callback: _checkLocationStatus,
                 );
-            // case GeolocationStatus.unknown:
-            //   return LocationErrorWidget(
-            //     error: "Unknown Location service error",
-            //     callback: _checkLocationStatus,
-            //   );
+              // case GeolocationStatus.unknown:
+              //   return LocationErrorWidget(
+              //     error: "Unknown Location service error",
+              //     callback: _checkLocationStatus,
+              //   );
               default:
                 return const SizedBox();
             }
@@ -99,8 +113,9 @@ class _QiblahCompassState extends State<QiblahCompass> {
       await FlutterQiblah.requestPermissions();
       final s = await FlutterQiblah.checkLocationStatus();
       _locationStreamController.sink.add(s);
-    } else
+    } else {
       _locationStreamController.sink.add(locationStatus);
+    }
   }
 }
 
@@ -120,8 +135,9 @@ class QiblahCompassWidget extends StatelessWidget {
     return StreamBuilder(
       stream: FlutterQiblah.qiblahStream,
       builder: (_, AsyncSnapshot<QiblahDirection> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting)
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const LoadingIndicator();
+        }
 
         final qiblahDirection = snapshot.data!;
 
@@ -194,6 +210,6 @@ class LoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const Center(
-    child: CircularProgressIndicator.adaptive(),
-  );
+        child: CircularProgressIndicator.adaptive(),
+      );
 }

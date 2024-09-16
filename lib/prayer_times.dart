@@ -1,9 +1,9 @@
 import 'package:adhan/adhan.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 
 class PrayerTimesPage extends StatefulWidget {
   const PrayerTimesPage({super.key});
@@ -59,7 +59,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
       setState(() {
         _prayerTimes = prayerTimes;
         _location =
-        '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+            '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
       });
     } catch (e) {
       print('Error getting prayer times: $e');
@@ -73,38 +73,75 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('مواقيت الصلاة'),
+        title: Text('مواقيت الصلاة',
+            style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Center(
-        child: _prayerTimes == null
-            ? const CircularProgressIndicator()
-            : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-
-            const SizedBox(height: 20),
-            _buildPrayerTimeRow('الفجر', _prayerTimes!.fajr),
-            _buildPrayerTimeRow('الشروق', _prayerTimes!.sunrise),
-            _buildPrayerTimeRow('الظهر', _prayerTimes!.dhuhr),
-            _buildPrayerTimeRow('العصر', _prayerTimes!.asr),
-            _buildPrayerTimeRow('المغرب', _prayerTimes!.maghrib),
-            _buildPrayerTimeRow('العشاء', _prayerTimes!.isha),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.deepPurple.shade100, Colors.white],
+          ),
+        ),
+        child: Center(
+          child: _prayerTimes == null
+              ? const CircularProgressIndicator(color: Colors.deepPurple)
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'مواقيت الصلاة',
+                      style: GoogleFonts.cairo(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildPrayerTimeCard('الفجر', _prayerTimes!.fajr),
+                    _buildPrayerTimeCard('الشروق', _prayerTimes!.sunrise),
+                    _buildPrayerTimeCard('الظهر', _prayerTimes!.dhuhr),
+                    _buildPrayerTimeCard('العصر', _prayerTimes!.asr),
+                    _buildPrayerTimeCard('المغرب', _prayerTimes!.maghrib),
+                    _buildPrayerTimeCard('العشاء', _prayerTimes!.isha),
+                    const SizedBox(height: 20),
+                    Text(
+                      _location,
+                      style: GoogleFonts.cairo(
+                          fontSize: 14, color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
         ),
       ),
     );
   }
 
-  Widget _buildPrayerTimeRow(String prayerName, DateTime? time) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(prayerName, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(width: 10),
-          Text(_formatTime(time)),
-        ],
+  Widget _buildPrayerTimeCard(String prayerName, DateTime? time) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              prayerName,
+              style: GoogleFonts.cairo(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple),
+            ),
+            Text(
+              _formatTime(time),
+              style: GoogleFonts.cairo(fontSize: 18, color: Colors.amber[800]),
+            ),
+          ],
+        ),
       ),
     );
   }

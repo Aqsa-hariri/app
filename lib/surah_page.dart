@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class SurahPage extends StatefulWidget {
   final int surahNumber;
   final String surahName;
 
-  SurahPage({required this.surahNumber, required this.surahName});
+  const SurahPage(
+      {super.key, required this.surahNumber, required this.surahName});
 
   @override
   _SurahPageState createState() => _SurahPageState();
@@ -23,7 +26,8 @@ class _SurahPageState extends State<SurahPage> {
   }
 
   Future<void> fetchAyahs() async {
-    final response = await http.get(Uri.parse('http://api.alquran.cloud/v1/surah/${widget.surahNumber}'));
+    final response = await http.get(
+        Uri.parse('http://api.alquran.cloud/v1/surah/${widget.surahNumber}'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
@@ -34,7 +38,6 @@ class _SurahPageState extends State<SurahPage> {
       setState(() {
         isLoading = false;
       });
-      // يمكنك إضافة معالجة الأخطاء هنا
     }
   }
 
@@ -42,24 +45,52 @@ class _SurahPageState extends State<SurahPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.surahName),
+        title: Text(widget.surahName,
+            style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.deepPurple,
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-        itemCount: ayahs.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(ayahs[index]['text'],
-              textDirection: TextDirection.rtl,
-              style: TextStyle(fontSize: 18),
+          ? const Center(
+              child: CircularProgressIndicator(color: Colors.deepPurple))
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.deepPurple.shade100, Colors.white],
+                ),
+              ),
+              child: ListView.builder(
+                itemCount: ayahs.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(
+                        ayahs[index]['text'],
+                        textDirection: TextDirection.rtl,
+                        style: GoogleFonts.amiri(
+                            fontSize: 20, color: Colors.deepPurple[700]),
+                      ),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.amber,
+                        child: Text(
+                          ayahs[index]['numberInSurah'].toString(),
+                          style: const TextStyle(
+                              color: Colors.deepPurple,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-            leading: CircleAvatar(
-              child: Text(ayahs[index]['numberInSurah'].toString()),
-            ),
-          );
-        },
-      ),
     );
   }
 }
